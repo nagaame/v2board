@@ -1,3 +1,16 @@
+# =============================================================================
+# v2board 面板 Clash/Mihomo 订阅模板（default.yaml）
+# -----------------------------------------------------------------------------
+# 面板渲染逻辑（resources/rules/default.clash.yaml → app/Protocols/ClashMeta.php）：
+#   1. 顶层 proxies: 会被面板填成订阅里的全部节点；
+#   2. 策略组 proxies 为「普通名字」（如 DIRECT）或留空 [] ⇒ 面板会把全部节点追加进去；
+#   3. 策略组 proxies 里写 PHP 正则（必须带分隔符，本模板统一用 ~...~）⇒ 面板按该正则筛选节点，
+#      并且不再往这个组追加全部节点；正则本身不会出现在生成的配置里；
+#   4. 面板会删掉 proxies 最终为空的策略组，而 mihomo 对「规则指向不存在的策略组」是硬报错，
+#      所以每个被规则引用的组都至少要留一个兜底项（见 ✖️ Twitter / 🤖 AI大模型 / 🎵 TikTok / FCM）；
+#   5. 面板不保留注释（Yaml 解析后重新 dump），注释只是给维护这个模板的人看的。
+# =============================================================================
+
 # port: 7890
 # socks-port: 7891
 # redir-port: 7892
@@ -8,589 +21,548 @@ bind-address: "*"
 mode: rule
 log-level: info
 external-controller: 127.0.0.1:9090
+external-ui: dashboard
+etag-support: true
+global-ua: clash.meta
+ipv6: false
+unified-delay: true
+tcp-concurrent: true
+keep-alive-idle: 600
+keep-alive-interval: 15
+store-selected: true
+store-fake-ip: true
+
+# tun:
+#   enable: true
+#   device: ClashTUN
+#   auto-detect-interface: true
+#   auto-route: true
+#   auto-redirect: true
+#   strict-route: true
+#   stack: mips
+#   dns-hijack:
+#     - "any:53"
+#     - "udp://any:53"
+#     - "tcp://any:53"
+#   route-address:
+#     - "198.51.100.0/30"
+#     - "1.0.0.0/8"
+#     - "2.0.0.0/7"
+#     - "4.0.0.0/6"
+#     - "8.0.0.0/7"
+#     - "11.0.0.0/8"
+#     - "12.0.0.0/6"
+#     - "16.0.0.0/4"
+#     - "32.0.0.0/3"
+#     - "64.0.0.0/3"
+#     - "96.0.0.0/4"
+#     - "112.0.0.0/5"
+#     - "120.0.0.0/6"
+#     - "124.0.0.0/7"
+#     - "126.0.0.0/8"
+#     - "128.0.0.0/3"
+#     - "160.0.0.0/5"
+#     - "168.0.0.0/8"
+#     - "169.0.0.0/9"
+#     - "169.128.0.0/10"
+#     - "169.192.0.0/11"
+#     - "169.224.0.0/12"
+#     - "169.240.0.0/13"
+#     - "169.248.0.0/14"
+#     - "169.252.0.0/15"
+#     - "169.255.0.0/16"
+#     - "170.0.0.0/7"
+#     - "172.0.0.0/12"
+#     - "172.32.0.0/11"
+#     - "172.64.0.0/10"
+#     - "172.128.0.0/9"
+#     - "173.0.0.0/8"
+#     - "174.0.0.0/7"
+#     - "176.0.0.0/4"
+#     - "192.0.0.0/9"
+#     - "192.128.0.0/11"
+#     - "192.160.0.0/13"
+#     - "192.169.0.0/16"
+#     - "192.170.0.0/15"
+#     - "192.172.0.0/14"
+#     - "192.176.0.0/12"
+#     - "192.192.0.0/10"
+#     - "193.0.0.0/8"
+#     - "194.0.0.0/7"
+#     - "196.0.0.0/6"
+#     - "200.0.0.0/5"
+#     - "208.0.0.0/4"
+
+ntp:
+  enable: true
+  write-to-system: false
+  server: 'time.apple.com'
+  # - 'ntp.aliyun.com'
+  # - 'time1.cloud.tencent.com'
+  port: 123
+
+sniffer:
+  enable: true
+  parse-pure-ip: true
+  override-destination: true
+  sniff:
+    HTTP: {ports: [80, 8080-8880]}
+    TLS: {ports: [443, 8443]}
+    QUIC: {ports: [443, 8443]}
+  force-domain:
+    - '+.v2ex.com'
+  skip-domain:
+    - 'Mijia Cloud'
+    - 'dlg.io.mi.com'
+    - '+.apple.com'
+    - '+.icloud.com'
+    - '+.wechat.com'
+    - '+.qpic.cn'
+    - '+.qq.com'
+    - '+.wechatapp.com'
+    - '+.vivox.com'
+    - '+.oray.com'
+    - '+.sunlogin.net'
+  skip-dst-address:
+    - 'rule-set:telegramcidr'
+    - 'rule-set:twitter-x-ip'
+    - 'rule-set:lancidr'
+    - 'rule-set:cncidr'
+    - 8.8.8.8/32
+    - 8.8.4.4/32
+    - 2001:4860:4860::8888/128
+    - 2001:4860:4860::8844/128
+    - 1.1.1.1/32
+    - 1.0.0.1/32
+    - 2606:4700:4700::1111/128
+    - 2606:4700:4700::1001/128
+    - 9.9.9.9/32
+    - 149.112.112.112/32
+    - 2620:fe::fe/128
+    - 208.67.222.222/32
+    - 208.67.220.220/32
+    - 2620:119:35::35/128
+    - 94.140.14.14/32
+    - 94.140.15.15/32
+    - 2a10:50c0::ad1:ff/128
+    - 2a10:50c0::ad2:ff/128
+    - 185.228.168.9/32
+    - 185.228.169.9/32
+    - 64.6.64.6/32
+    - 64.6.65.6/32
+    - 77.88.8.8/32
+    - 77.88.8.1/32
+    - 185.222.222.222/32
+    - 45.11.45.11/32
+    - 223.5.5.5/32
+    - 223.6.6.6/32
+    - 2400:3200::1/128
+    - 2400:3200:baba::1/128
+    - 119.29.29.29/32
+    - 182.254.116.116/32
+    - 180.76.76.76/32
+    - 114.114.114.114/32
+    - 114.114.115.115/32
+    - 114.114.114.119/32
+    - 114.114.115.119/32
+    - 1.2.4.8/32
+    - 210.2.4.8/32
+    - 101.226.4.6/32
+    - 218.30.118.6/32
 
 dns:
   enable: true
-  # listen: 0.0.0.0:53
+  cache-algorithm: arc
+  #prefer-h3: true
   ipv6: false
-
-  default-nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
-    - 114.114.114.114
-  enhanced-mode: fake-ip
-  fake-ip-range: 198.18.0.1/16
+  listen: '0.0.0.0:1053'
+  #listen: '0.0.0.0:53'
   use-hosts: true
-  respect-rules: true
+  use-system-hosts: false
+  default-nameserver:
+    - 223.5.5.5#DIRECT
+    - 114.114.114.114#DIRECT
+    - https://dns.alidns.com/dns-query#DIRECT
   proxy-server-nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
-    - 114.114.114.114
+    - https://kuokuo.cloudflare-gateway.com/dns-query#DIRECT
+  direct-nameserver:
+    - https://dns.alidns.com/dns-query#DIRECT
+    - https://doh.pub/dns-query#DIRECT
+  direct-nameserver-follow-policy: true
   nameserver:
-    - 223.5.5.5
-    - 119.29.29.29
-    - 114.114.114.114
-  fallback:
-    - 1.1.1.1
-    - 8.8.8.8
-  fallback-filter:
-    geoip: true
-    geoip-code: CN
-    geosite:
-      - gfw
-    ipcidr:
-      - 240.0.0.0/4
-    domain:
-      - '+.google.com'
-      - '+.facebook.com'
-      - '+.youtube.com'
+    # 👉 手动切换 为策略组名，即「DNS 走这个组里的节点解析」
+    - https://cloudflare-dns.com/dns-query#👉 手动切换
+  # - https://dns.adguard-dns.com/dns-query     # AdGuard 公共 DNS  # 94.140.14.14        94.140.15.15
+    - https://dns.google/dns-query#👉 手动切换    # Google 公共 DNS   # 8.8.8.8             8.8.4.4
+  # - https://dns.quad9.net/dns-query           # IBM Quad9 公共 DNS # 9.9.9.11            149.112.112.11
+  # - https://doh.opendns.com/dns-query         # OpenDNS 公共 DNS  # 208.67.220.220      208.67.222.222
+  # - https://doh.dns.sb/dns-query              # DNS.SB 公共 DNS   # 185.222.222.222     45.11.45.11
+  # - https://dns.twnic.tw/dns-query            # Quad101 公共 DNS  # 101.101.101.10      101.102.103.10
+  nameserver-policy:
+    'rule-set:douyin':
+      - system
+      - 180.184.1.1
+      - 180.184.2.2
+    'rule-set:private':
+      - system
+    'rule-set:proxy@direct,cn,echs_cn,echs_direct':
+      - https://dns.alidns.com/dns-query#DIRECT
+  prefer-h3: false
+  respect-rules: false
+  enhanced-mode: fake-ip
+  fake-ip-range: '198.18.0.1/16'
+  fake-ip-range6: fdfe:dcba:9876::1/64
+  fake-ip-filter-mode: blacklist
+  fake-ip-filter:
+    - rule-set:fakeip-filter_domain
+    - rule-set:private
+    - rule-set:cn
+    - rule-set:echs_cn
+    - rule-set:echs_direct
+    - rule-set:googlefcm
+    - rule-set:applications
+    - rule-set:pixiv
+    - pixshaft.com
 
+hosts:
+  '+.clash.dev': ['127.0.0.1']
+  'services.googleapis.cn': ['services.googleapis.com']
+  '+.mcdn.bilivideo.com': ['0.0.0.0']
+  '+.mcdn.bilivideo.cn': ['0.0.0.0']
+  'mtalk.google.com': ['142.250.107.188', '108.177.125.188']
+  'dns.msftncsi.com': ['131.107.255.255', 'fd3e:4f5a:5b81::1']
+  #'dns.alidns.com': ['223.5.5.5', '223.6.6.6']                 # 🇨🇳 阿里 DNS
+  #'pdns.dnspod.cn': ['119.29.29.29', '119.28.28.28']           # 🇨🇳 腾讯 DNS
+  #'dns.pub': ['119.29.29.29']                                  # 🇨🇳 腾讯 DNS
+  #'doh.pub': ['1.12.12.12', '120.53.53.53']                    # 🇨🇳 腾讯 DNS
+  #'dot.pub': ['1.12.12.12', '120.53.53.53']                    # 🇨🇳 腾讯 DNS
+  #'one.one.one.one': ['1.0.0.1', '1.1.1.1']                    # 🇺🇸 Cloudflare 公共 DNS
+  '*.pangolin-sdk-toutiao': 0.0.0.0
+  '*.pangolin-sdk-toutiao.*': 0.0.0.0
+  '*.pstatp.com': 0.0.0.0
+  '*.pstatp.com.*': 0.0.0.0
+  '*.pglstatp-toutiao.com': 0.0.0.0
+  '*.pglstatp-toutiao.com.*': 0.0.0.0
+  'gurd.snssdk.com': 0.0.0.0
+  'gurd.snssdk.com.*': 0.0.0.0
+  '*default.ixigua.com': 0.0.0.0
 
+# 由面板填入订阅的全部节点，模板里保持为空
 proxies:
 
 proxy-groups:
-  - { name: "$app_name", type: select, proxies: ["自动选择", "故障转移"] }
-  - { name: "自动选择", type: url-test, proxies: [], url: "http://www.gstatic.com/generate_204", interval: 86400 }
-  - { name: "故障转移", type: fallback, proxies: [], url: "http://www.gstatic.com/generate_204", interval: 7200 }
+  # $app_name 是模板变量，面板会替换成站点名称（config('v2board.app_name')）
+  # 规则里所有需要「走代理」的流量都指向这一组（原完善配置里叫 🌍 PROXY）
+  - name: "$app_name"
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-proxy.png"
+    type: select
+    proxies:
+      - 👉 手动切换
+      - ♻️ 自动选择
+      - 🔄 负载均衡
+      - DIRECT
+
+  - name: 👉 手动切换
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-select.png"
+    type: select
+    proxies: [] # 留空：面板自动填入订阅的全部节点
+
+  - name: ♻️ 自动选择
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-auto.png"
+    type: url-test
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    tolerance: 50
+    proxies: [] # 留空：面板自动填入订阅的全部节点
+
+  - name: 🔄 负载均衡
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-clash-verge-rev-balance.svg"
+    type: load-balance
+    url: https://www.gstatic.com/generate_204
+    interval: 300
+    lazy: true
+    strategy: sticky-sessions
+    proxies: [] # 留空：面板自动填入订阅的全部节点
+
+  - name: 🍎 海外苹果
+    icon: https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-AIsouler-MyClash-Apple.svg
+    type: select
+    proxies: [] # 留空：面板自动填入订阅的全部节点
+
+  - name: 💠 海外微软
+    icon: https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/self-Microsoft.svg
+    type: select
+    proxies: [] # 留空：面板自动填入订阅的全部节点
+
+  - name: 🎮 Steam平台（非下载/CDN）
+    icon: https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-AIsouler-MyClash-Steam.svg
+    type: select
+    default-selected: DIRECT # 注：mihomo 不识别该字段（会被忽略）；想让本组默认走 DIRECT 在客户端里选一次即可
+    proxies: [] # 留空：面板自动填入订阅的全部节点
+
+  - name: 📲 Telegram
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-telegram.png"
+    type: select
+    proxies: [] # 留空：面板自动填入订阅的全部节点
+
+  - name: 🎮 Games-Global
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-games-cn.png"
+    type: select
+    proxies: [] # 留空：面板自动填入订阅的全部节点
+
+  # 下面三组的“只挑美国/住宅类节点”过滤，用面板能识别的写法表达：
+  # proxies 第一条是带 ~ 分隔符的 PHP 正则，面板会拿它筛节点、且不再追加全部节点；
+  # 第二条 👉 手动切换 是兜底项（面板会删掉最终为空的组，而规则引用不存在的组会让 mihomo 直接报错），
+  # 所以生成为 [👉 手动切换, 匹配到的节点...]；想要纯净的过滤列表，把兜底那一行删掉即可。
+  - name: ✖️ Twitter
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-clash-verge-rev-twitter.svg"
+    type: select
+    proxies:
+      - '~(?i)^(?!.*(?:🇭🇰|香港|Hong\s*Kong|\bHK\b|🇸🇬|新加坡|Singapore|\bSG\b)).*(?:住宅|家宽|家寬|家庭宽带|家庭寬頻|原生住宅|住宅\s*IP|residential|home\s*broadband|home\s*internet|🇺🇸|美国|美國|\bUnited\s+States\b|\bU\.?S\.?(?:A\.?)?\b).*$~'
+      - 👉 手动切换
+
+  - name: 🤖 AI大模型
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-ai.png"
+    type: select
+    proxies:
+      - '~(?i)^(?!.*(?:🇭🇰|香港|USA|Hong\s*Kong|\bHK\b|🇸🇬|新加坡|Singapore|\bSG\b)).*(?:住宅|家宽|家寬|家庭宽带|家庭寬頻|原生住宅|住宅\s*IP|residential|home\s*broadband|home\s*internet|🇺🇸|美国|美國|\bUnited\s+States\b|\bU\.?S\.?(?:A\.?)?\b).*$~'
+      - XHTTP
+      - REALITY
+      - 👉 手动切换
+
+  - name: 🎵 TikTok
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-DustinWin-ruleset_geodata-tiktok.png"
+    type: select
+    proxies:
+      - '~(?i)^(?!.*(?:🇭🇰|香港|Hong\s*Kong|\bHK\b|🇸🇬|新加坡|Singapore|\bSG\b)).*(?:住宅|家宽|家寬|家庭宽带|家庭寬頻|原生住宅|住宅\s*IP|residential|home\s*broadband|home\s*internet|🇺🇸|美国|美國|\bUnited\s+States\b|\bU\.?S\.?(?:A\.?)?\b).*$~'
+      - 👉 手动切换
+
+  # FCM：Google FCM 域名分流目标（命中规则 RULE-SET,googlefcm,FCM 后进入此组）。
+  # 注意：面板会给本组追加全部节点（这是面板行为，无法只保留两项），默认选中仍是 👉 手动切换。
+  - name: FCM
+    icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-MiToverG422-Qure-fcm.png"
+    type: select
+    proxies:
+      - 👉 手动切换
+      - DIRECT
+
+# 公共模板配置（锚点定义，面板解析后会自动展开，仅用于让本文件更紧凑）
+.templates:
+  domain_mrs: &domain_mrs { type: http, interval: 86400, behavior: domain, format: mrs }
+  ipcidr_mrs: &ipcidr_mrs { type: http, interval: 86400, behavior: ipcidr, format: mrs }
+  domain_yaml: &domain_yaml { type: http, interval: 86400, behavior: domain }
+  ipcidr_yaml: &ipcidr_yaml { type: http, interval: 86400, behavior: ipcidr }
+  classical_yaml: &classical_yaml { type: http, interval: 86400, behavior: classical }
+
+# 规则集配置
+rule-providers:
+  Gemini_Domain: { <<: *domain_yaml, url: 'https://cdn.jsdelivr.net/gh/Accademia/Additional_Rule_For_Clash@master/Gemini/Gemini_Domain.yaml', path: ./ruleset/Gemini_Domain.yaml }
+  Grok_Domain: { <<: *domain_yaml, url: 'https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/refs/heads/main/Grok/Grok_Domain.yaml', path: ./ruleset/Grok_Domain.yaml }
+  HijackingPlus: { <<: *classical_yaml, url: 'https://raw.githubusercontent.com/Accademia/Additional_Rule_For_Clash/refs/heads/main/HijackingPlus/HijackingPlus_No_Resolve.yaml', path: ./ruleset/HijackingPlus.yaml }
+  TikTok: { <<: *domain_mrs, url: 'https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/tiktok.mrs', path: ./ruleset/tiktok.mrs }
+  ai-1: { <<: *domain_mrs, url: 'https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/ai.mrs', path: ./ruleset/ai-1.mrs }
+  ai-2: { <<: *domain_mrs, url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/category-ai-!cn.mrs', path: ./ruleset/ai-2.mrs }
+  apple: { <<: *domain_mrs, url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/apple.mrs', path: ./ruleset/apple.mrs }
+  apple@cn: { <<: *domain_mrs, url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/apple@cn.mrs', path: ./ruleset/apple@cn.mrs }
+  apple_ip: { <<: *ipcidr_mrs, url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geoip/apple.mrs', path: ./ruleset/apple_ip.mrs }
+  applications: { <<: *domain_yaml, url: 'https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/applications.txt', path: ./ruleset/applications.yaml }
+  cn: { <<: *domain_mrs, url: 'https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/cn.mrs', path: ./ruleset/cn.mrs }
+  cncidr: { <<: *ipcidr_mrs, url: 'https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/cnip.mrs', path: ./ruleset/cncidr.mrs }
+  douyin: { <<: *domain_mrs, url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/douyin.mrs', path: ./ruleset/douyin.mrs }
+  echs_cn: { <<: *domain_mrs, url: 'https://raw.githubusercontent.com/echs-top/proxy/main/mrs/domain/cn.mrs', path: ./ruleset/echs_cn.mrs }
+  echs_cn_ip: { <<: *ipcidr_mrs, url: 'https://raw.githubusercontent.com/echs-top/proxy/main/mrs/ip/cn.mrs', path: ./ruleset/echs_cn_ip.mrs }
+  echs_direct: { <<: *domain_mrs, url: 'https://raw.githubusercontent.com/echs-top/proxy/main/mrs/domain/direct.mrs', path: ./ruleset/echs_direct.mrs }
+  echs_direct_ip: { <<: *ipcidr_mrs, url: 'https://raw.githubusercontent.com/echs-top/proxy/main/mrs/ip/direct.mrs', path: ./ruleset/echs_direct_ip.mrs }
+  fakeip-filter_domain: { <<: *domain_mrs, url: 'https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/fakeip-filter.mrs', path: ./ruleset/fakeip-filter_domain.mrs }
+  games: { <<: *domain_mrs, url: 'https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/games.mrs', path: ./ruleset/games.mrs }
+  games-cn: { <<: *domain_mrs, url: 'https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/games-cn.mrs', path: ./ruleset/games-cn.mrs }
+  gfw: { <<: *domain_mrs, url: 'https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/gfw.mrs', path: ./ruleset/gfw.mrs }
+  google: { <<: *domain_yaml, url: 'https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/google.txt', path: ./ruleset/google.yaml }
+  google-cn: { <<: *domain_mrs, url: 'https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/google-cn.mrs', path: ./ruleset/google-cn.mrs }
+  googlefcm: { <<: *domain_mrs, url: 'https://fastly.jsdelivr.net/gh/MetaCubeX/meta-rules-dat@meta/geo/geosite/googlefcm.mrs', path: ./ruleset/googlefcm.mrs }
+  lancidr: { <<: *ipcidr_yaml, url: 'https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/lancidr.txt', path: ./ruleset/lancidr.yaml }
+  microsoft_ip: { <<: *ipcidr_mrs, url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geoip/microsoft.mrs', path: ./ruleset/microsoft_ip.mrs }
+  microsoft: { <<: *domain_mrs, url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/microsoft.mrs', path: ./ruleset/microsoft.mrs }
+  microsoft@cn: { <<: *domain_mrs, url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/microsoft@cn.mrs', path: ./ruleset/microsoft@cn.mrs }
+  pixiv: { <<: *domain_mrs, url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/pixiv.mrs', path: ./ruleset/pixiv.mrs }
+  private: { <<: *domain_yaml, url: 'https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/private.txt', path: ./ruleset/private.yaml }
+  proxy: { <<: *domain_mrs, url: 'https://github.com/DustinWin/ruleset_geodata/releases/download/mihomo-ruleset/proxy.mrs', path: ./ruleset/proxy.mrs }
+  proxy@direct: { <<: *domain_mrs, url: 'https://raw.githubusercontent.com/echs-top/proxy/main/mrs/domain/proxy@direct.mrs', path: ./rules/proxy@direct.mrs }
+  steam_ip: { <<: *ipcidr_mrs, url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geoip/steam.mrs', path: ./ruleset/steam_ip.mrs }
+  steam: { <<: *domain_mrs, url: 'https://fastly.jsdelivr.net/gh/appshubcc/bett-rules@meta/geo/geosite/steam.mrs', path: ./ruleset/steam.mrs }
+  telegram_domain: { <<: *domain_mrs, url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/telegram.mrs', path: ./rules/telegram_domain.mrs }
+  telegramcidr: { <<: *ipcidr_mrs, url: 'https://raw.githubusercontent.com/reddishJade/private_proxy/main/Mihomo/Provider/telegram%40ip.mrs', path: ./ruleset/telegramcidr.mrs }
+  twitter-x-blackmatrix7-No_Resolve: { <<: *classical_yaml, format: yaml, url: 'https://raw.githubusercontent.com/blackmatrix7/ios_rule_script/refs/heads/master/rule/Clash/Twitter/Twitter_No_Resolve.yaml', path: ./ruleset/twitter-x-blackmartix7-noreslove.mrs }
+  twitter-x-domain: { <<: *domain_mrs, url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geosite/twitter.mrs', path: ./ruleset/twitter/x-domain.mrs }
+  twitter-x-ip: { <<: *ipcidr_mrs, url: 'https://raw.githubusercontent.com/MetaCubeX/meta-rules-dat/meta/geo/geoip/twitter.mrs', path: ./ruleset/twitter/x-ip.mrs }
+
+sub-rules:
+  fanqie:
+    - DOMAIN,p6-ad-sign.byteimg.com,REJECT
+    - DOMAIN,p9-ad-sign.byteimg.com,REJECT
+    - DOMAIN,i.snssdk.com,REJECT
+    - DOMAIN,i-lq.snssdk.com,REJECT
+    - DOMAIN,dig.bdurl.net,REJECT
+    - DOMAIN-KEYWORD,zijieapi,REJECT
+    - DOMAIN,activity-ag.awemeughun.com,REJECT
+    - DOMAIN,mcs.snssdk.com,REJECT
+    - DOMAIN,tnc3-alisc1.snssdk.com,REJECT
+    - DOMAIN,security-lq.snssdk.com,REJECT
+    - DOMAIN,tnc3-aliec2.snssdk.com,REJECT
+    - DOMAIN,is.snssdk.com,REJECT
+    - DOMAIN,v6-novelapp.ixigua.com,REJECT
+    - DOMAIN-WILDCARD,*novelapp.ixigua.com,REJECT
+    - DOMAIN-WILDCARD,*default.ixigua.com,REJECT
+    - DOMAIN,msync-im1-vip6-std.easemob.com,REJECT
+    - DOMAIN,apd-pcdnwxlogin.teg.tencent-cloud.net,REJECT
+    - DOMAIN,api.iegadp.qq.com,REJECT
+    - DOMAIN,sf3-ttcdn-tos.pstatp.com,REJECT
+    - DOMAIN-SUFFIX,pglstatp-toutiao.com,REJECT
+    - DOMAIN-SUFFIX,byteorge.com,REJECT
+    - DOMAIN-SUFFIX,bytegoofy.com,REJECT
+    - DOMAIN-SUFFIX,bytedance.com,REJECT
+    - IP-CIDR,49.71.37.101/32,REJECT,no-resolve
+    - IP-CIDR,117.71.105.23/32,REJECT,no-resolve
+    - IP-CIDR,218.94.207.205/32,REJECT,no-resolve
+    - IP-CIDR,117.92.229.188/32,REJECT,no-resolve
+    - IP-CIDR,101.36.166.16/32,REJECT,no-resolve
+    - IP-CIDR,180.96.2.114/32,REJECT,no-resolve
+    # URL 重写 Host 提取
+    - DOMAIN-WILDCARD,*.pangolin-sdk-toutiao.com,REJECT
+    - DOMAIN-WILDCARD,*.pglstatp-toutiao.com,REJECT
+    - DOMAIN-WILDCARD,*.pstatp.com,REJECT
+    - DOMAIN,gurd.snssdk.com,REJECT
+    - DOMAIN-WILDCARD,*.byteimg.com,REJECT
+    - DOMAIN-WILDCARD,*.snssdk.com,REJECT
+    # MITM 主机
+    - DOMAIN-WILDCARD,*.pangolin-sdk-toutiao,REJECT
+    - DOMAIN-WILDCARD,*.pangolin-sdk-toutiao.*,REJECT
+    - DOMAIN-WILDCARD,*.pstatp.com.*,REJECT
+    - DOMAIN-WILDCARD,*.pglstatp-toutiao.com.*,REJECT
+    - DOMAIN-WILDCARD,gurd.snssdk.com.*,REJECT
+    - MATCH,DIRECT
 
 rules:
   # 自定义规则
+  # --- 以下为规则主体，与「完善配置」完全一致，仅把目标组 🌍 PROXY 换成模板变量 $app_name ---
+  - AND,((NETWORK,UDP),(DST-PORT,3478-3479/5349-5350/19302-19309),(NOT,((RULE-SET,cncidr))),(NOT,((RULE-SET,cn))),(NOT,((RULE-SET,applications))),(NOT,((RULE-SET,games))),(NOT,((RULE-SET,games-cn)))),REJECT
+  - RULE-SET,HijackingPlus,REJECT
+
   ## 您可以在此处插入您补充的自定义规则（请注意保持缩进）
-  - IP-CIDR,1.1.1.1/32,$app_name,no-resolve
-  - IP-CIDR,8.8.8.8/32,$app_name,no-resolve
-  # Google 中国服务
-  - DOMAIN-SUFFIX,services.googleapis.cn,$app_name
-  - DOMAIN-SUFFIX,xn--ngstr-lra8j.com,$app_name
+  - IP-CIDR,64.64.234.234/32,DIRECT
+  - IP-CIDR,104.243.18.103/32,DIRECT
+  - DOMAIN,bedrock.kuokuo.io,DIRECT
+  - DOMAIN,deepclaude.kuokuo.io,DIRECT
 
-  # Apple
-  - DOMAIN,safebrowsing.urlsec.qq.com,DIRECT # 如果您并不信任此服务提供商或防止其下载消耗过多带宽资源，可以进入 Safari 设置，关闭 Fraudulent Website Warning 功能，并使用 REJECT 策略。
-  - DOMAIN,safebrowsing.googleapis.com,DIRECT # 如果您并不信任此服务提供商或防止其下载消耗过多带宽资源，可以进入 Safari 设置，关闭 Fraudulent Website Warning 功能，并使用 REJECT 策略。
-  - DOMAIN,developer.apple.com,$app_name
-  - DOMAIN-SUFFIX,digicert.com,$app_name
-  - DOMAIN,ocsp.apple.com,$app_name
-  - DOMAIN,ocsp.comodoca.com,$app_name
-  - DOMAIN,ocsp.usertrust.com,$app_name
-  - DOMAIN,ocsp.sectigo.com,$app_name
-  - DOMAIN,ocsp.verisign.net,$app_name
-  - DOMAIN-SUFFIX,apple-dns.net,$app_name
-  - DOMAIN,testflight.apple.com,$app_name
-  - DOMAIN,sandbox.itunes.apple.com,$app_name
-  - DOMAIN,itunes.apple.com,$app_name
-  - DOMAIN-SUFFIX,apps.apple.com,$app_name
-  - DOMAIN-SUFFIX,blobstore.apple.com,$app_name
-  - DOMAIN,cvws.icloud-content.com,$app_name
-  - DOMAIN-SUFFIX,mzstatic.com,DIRECT
-  - DOMAIN-SUFFIX,itunes.apple.com,DIRECT
-  - DOMAIN-SUFFIX,icloud.com,DIRECT
-  - DOMAIN-SUFFIX,icloud-content.com,DIRECT
-  - DOMAIN-SUFFIX,me.com,DIRECT
-  - DOMAIN-SUFFIX,aaplimg.com,DIRECT
-  - DOMAIN-SUFFIX,cdn20.com,DIRECT
-  - DOMAIN-SUFFIX,cdn-apple.com,DIRECT
-  - DOMAIN-SUFFIX,akadns.net,DIRECT
-  - DOMAIN-SUFFIX,akamaiedge.net,DIRECT
+  - SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie
+  - DOMAIN-KEYWORD,ikuuu,$app_name
+  - RULE-SET,microsoft@cn,DIRECT
+  - RULE-SET,apple@cn,DIRECT
+  - RULE-SET,games-cn,DIRECT
+  - RULE-SET,microsoft,💠 海外微软
+  - RULE-SET,microsoft_ip,💠 海外微软,no-resolve
+  - RULE-SET,apple,🍎 海外苹果
+  - RULE-SET,apple_ip,🍎 海外苹果,no-resolve
+  - RULE-SET,applications,DIRECT
+  - RULE-SET,echs_cn,DIRECT
+  - RULE-SET,echs_cn_ip,DIRECT,no-resolve
+  - RULE-SET,echs_direct,DIRECT
+  - RULE-SET,echs_direct_ip,DIRECT,no-resolve
+  - RULE-SET,cn,DIRECT
+  - RULE-SET,cncidr,DIRECT,no-resolve
+  - RULE-SET,googlefcm,FCM
+  - DOMAIN,clash.razord.top,DIRECT
+  - DOMAIN,yacd.haishan.me,DIRECT
+  - PROCESS-NAME,svchost.exe,DIRECT
+  - RULE-SET,proxy@direct,$app_name
+  - RULE-SET,private,DIRECT,no-resolve
+  - RULE-SET,lancidr,DIRECT,no-resolve
+
+  - DOMAIN-WILDCARD,*.deepseek.com,DIRECT
+  - DOMAIN-WILDCARD,*.portal101.cn,DIRECT
+  # 华为云 CDN 的分发域名
+  - DOMAIN-SUFFIX,cdnhwcqwg14.com,DIRECT
+  - DOMAIN-SUFFIX,cdnhwcxcy07.com,DIRECT
+  # 阿里云 CDN 的分发域名
+  - DOMAIN-SUFFIX,cdngslb.com,DIRECT
+  # Akamai CDN 的分发域名
   - DOMAIN-SUFFIX,edgekey.net,DIRECT
-  - DOMAIN-SUFFIX,mwcloudcdn.com,DIRECT
-  - DOMAIN-SUFFIX,mwcname.com,DIRECT
-  - DOMAIN-SUFFIX,apple.com,DIRECT
-  - DOMAIN-SUFFIX,apple-cloudkit.com,DIRECT
-  - DOMAIN-SUFFIX,apple-mapkit.com,DIRECT
-  # - DOMAIN,e.crashlytics.com,REJECT //注释此选项有助于大多数App开发者分析崩溃信息；如果您拒绝一切崩溃数据统计、搜集，请取消 # 注释。
+  # Amazon CloudFront 分发域名 (api 接口 CDN)
+  - DOMAIN-SUFFIX,cloudfront.net,DIRECT
 
-  # 国内网站
-  - DOMAIN,cn.bing.com,DIRECT
-  - DOMAIN-SUFFIX,126.com,DIRECT
-  - DOMAIN-SUFFIX,126.net,DIRECT
-  - DOMAIN-SUFFIX,127.net,DIRECT
-  - DOMAIN-SUFFIX,163.com,DIRECT
-  - DOMAIN-SUFFIX,360buyimg.com,DIRECT
-  - DOMAIN-SUFFIX,36kr.com,DIRECT
-  - DOMAIN-SUFFIX,acfun.tv,DIRECT
-  - DOMAIN-SUFFIX,air-matters.com,DIRECT
-  - DOMAIN-SUFFIX,aixifan.com,DIRECT
-  - DOMAIN-KEYWORD,alicdn,DIRECT
-  - DOMAIN-KEYWORD,alipay,DIRECT
-  - DOMAIN-KEYWORD,taobao,DIRECT
-  - DOMAIN-SUFFIX,amap.com,DIRECT
-  - DOMAIN-SUFFIX,autonavi.com,DIRECT
-  - DOMAIN-KEYWORD,baidu,DIRECT
-  - DOMAIN-SUFFIX,bdimg.com,DIRECT
-  - DOMAIN-SUFFIX,bdstatic.com,DIRECT
-  - DOMAIN-SUFFIX,bilibili.com,DIRECT
-  - DOMAIN-SUFFIX,bilivideo.com,DIRECT
-  - DOMAIN-SUFFIX,caiyunapp.com,DIRECT
-  - DOMAIN-SUFFIX,clouddn.com,DIRECT
-  - DOMAIN-SUFFIX,cnbeta.com,DIRECT
-  - DOMAIN-SUFFIX,cnbetacdn.com,DIRECT
-  - DOMAIN-SUFFIX,cootekservice.com,DIRECT
-  - DOMAIN-SUFFIX,csdn.net,DIRECT
-  - DOMAIN-SUFFIX,ctrip.com,DIRECT
-  - DOMAIN-SUFFIX,dgtle.com,DIRECT
-  - DOMAIN-SUFFIX,dianping.com,DIRECT
-  - DOMAIN-SUFFIX,douban.com,DIRECT
-  - DOMAIN-SUFFIX,doubanio.com,DIRECT
-  - DOMAIN-SUFFIX,duokan.com,DIRECT
-  - DOMAIN-SUFFIX,easou.com,DIRECT
-  - DOMAIN-SUFFIX,ele.me,DIRECT
-  - DOMAIN-SUFFIX,feng.com,DIRECT
-  - DOMAIN-SUFFIX,fir.im,DIRECT
-  - DOMAIN-SUFFIX,frdic.com,DIRECT
-  - DOMAIN-SUFFIX,g-cores.com,DIRECT
-  - DOMAIN-SUFFIX,godic.net,DIRECT
-  - DOMAIN-SUFFIX,gtimg.com,DIRECT
-  - DOMAIN,cdn.hockeyapp.net,DIRECT
-  - DOMAIN-SUFFIX,hongxiu.com,DIRECT
-  - DOMAIN-SUFFIX,hxcdn.net,DIRECT
-  - DOMAIN-SUFFIX,iciba.com,DIRECT
-  - DOMAIN-SUFFIX,ifeng.com,DIRECT
-  - DOMAIN-SUFFIX,ifengimg.com,DIRECT
-  - DOMAIN-SUFFIX,ipip.net,DIRECT
-  - DOMAIN-SUFFIX,iqiyi.com,DIRECT
-  - DOMAIN-SUFFIX,jd.com,DIRECT
-  - DOMAIN-SUFFIX,jianshu.com,DIRECT
-  - DOMAIN-SUFFIX,knewone.com,DIRECT
-  - DOMAIN-SUFFIX,le.com,DIRECT
-  - DOMAIN-SUFFIX,lecloud.com,DIRECT
-  - DOMAIN-SUFFIX,lemicp.com,DIRECT
-  - DOMAIN-SUFFIX,licdn.com,DIRECT
-  - DOMAIN-SUFFIX,luoo.net,DIRECT
-  - DOMAIN-SUFFIX,meituan.com,DIRECT
-  - DOMAIN-SUFFIX,meituan.net,DIRECT
-  - DOMAIN-SUFFIX,mi.com,DIRECT
-  - DOMAIN-SUFFIX,miaopai.com,DIRECT
-  - DOMAIN-SUFFIX,microsoft.com,DIRECT
-  - DOMAIN-SUFFIX,microsoftonline.com,DIRECT
-  - DOMAIN-SUFFIX,miui.com,DIRECT
-  - DOMAIN-SUFFIX,miwifi.com,DIRECT
-  - DOMAIN-SUFFIX,mob.com,DIRECT
-  - DOMAIN-SUFFIX,netease.com,DIRECT
-  - DOMAIN-SUFFIX,office.com,DIRECT
-  - DOMAIN-SUFFIX,office365.com,DIRECT
-  - DOMAIN-KEYWORD,officecdn,DIRECT
-  - DOMAIN-SUFFIX,oschina.net,DIRECT
-  - DOMAIN-SUFFIX,ppsimg.com,DIRECT
-  - DOMAIN-SUFFIX,pstatp.com,DIRECT
-  - DOMAIN-SUFFIX,qcloud.com,DIRECT
-  - DOMAIN-SUFFIX,qdaily.com,DIRECT
-  - DOMAIN-SUFFIX,qdmm.com,DIRECT
-  - DOMAIN-SUFFIX,qhimg.com,DIRECT
-  - DOMAIN-SUFFIX,qhres.com,DIRECT
-  - DOMAIN-SUFFIX,qidian.com,DIRECT
-  - DOMAIN-SUFFIX,qihucdn.com,DIRECT
-  - DOMAIN-SUFFIX,qiniu.com,DIRECT
-  - DOMAIN-SUFFIX,qiniucdn.com,DIRECT
-  - DOMAIN-SUFFIX,qiyipic.com,DIRECT
-  - DOMAIN-SUFFIX,qq.com,DIRECT
-  - DOMAIN-SUFFIX,qqurl.com,DIRECT
-  - DOMAIN-SUFFIX,rarbg.to,DIRECT
-  - DOMAIN-SUFFIX,ruguoapp.com,DIRECT
-  - DOMAIN-SUFFIX,segmentfault.com,DIRECT
-  - DOMAIN-SUFFIX,sinaapp.com,DIRECT
-  - DOMAIN-SUFFIX,smzdm.com,DIRECT
-  - DOMAIN-SUFFIX,snapdrop.net,DIRECT
-  - DOMAIN-SUFFIX,sogou.com,DIRECT
-  - DOMAIN-SUFFIX,sogoucdn.com,DIRECT
-  - DOMAIN-SUFFIX,sohu.com,DIRECT
-  - DOMAIN-SUFFIX,soku.com,DIRECT
-  - DOMAIN-SUFFIX,speedtest.net,DIRECT
-  - DOMAIN-SUFFIX,sspai.com,DIRECT
-  - DOMAIN-SUFFIX,suning.com,DIRECT
-  - DOMAIN-SUFFIX,taobao.com,DIRECT
-  - DOMAIN-SUFFIX,tencent.com,DIRECT
-  - DOMAIN-SUFFIX,tenpay.com,DIRECT
-  - DOMAIN-SUFFIX,tianyancha.com,DIRECT
-  - DOMAIN-SUFFIX,tmall.com,DIRECT
-  - DOMAIN-SUFFIX,tudou.com,DIRECT
-  - DOMAIN-SUFFIX,umetrip.com,DIRECT
-  - DOMAIN-SUFFIX,upaiyun.com,DIRECT
-  - DOMAIN-SUFFIX,upyun.com,DIRECT
-  - DOMAIN-SUFFIX,veryzhun.com,DIRECT
-  - DOMAIN-SUFFIX,weather.com,DIRECT
-  - DOMAIN-SUFFIX,weibo.com,DIRECT
-  - DOMAIN-SUFFIX,xiami.com,DIRECT
-  - DOMAIN-SUFFIX,xiami.net,DIRECT
-  - DOMAIN-SUFFIX,xiaomicp.com,DIRECT
-  - DOMAIN-SUFFIX,ximalaya.com,DIRECT
-  - DOMAIN-SUFFIX,xmcdn.com,DIRECT
-  - DOMAIN-SUFFIX,xunlei.com,DIRECT
-  - DOMAIN-SUFFIX,yhd.com,DIRECT
-  - DOMAIN-SUFFIX,yihaodianimg.com,DIRECT
-  - DOMAIN-SUFFIX,yinxiang.com,DIRECT
-  - DOMAIN-SUFFIX,ykimg.com,DIRECT
-  - DOMAIN-SUFFIX,youdao.com,DIRECT
-  - DOMAIN-SUFFIX,youku.com,DIRECT
-  - DOMAIN-SUFFIX,zealer.com,DIRECT
-  - DOMAIN-SUFFIX,zhihu.com,DIRECT
-  - DOMAIN-SUFFIX,zhimg.com,DIRECT
-  - DOMAIN-SUFFIX,zimuzu.tv,DIRECT
-  - DOMAIN-SUFFIX,zoho.com,DIRECT
+  - PROCESS-NAME-REGEX,.*nagram.*,📲 Telegram
+  - "PROCESS-NAME-REGEX,.*telegram.*,📲 Telegram"
+  - RULE-SET,telegramcidr,📲 Telegram,no-resolve
+  - RULE-SET,telegram_domain,📲 Telegram
+  # Manus AI：覆盖 Manus Desktop、Manus Helper 及 Android 客户端进程
+  - PROCESS-NAME-REGEX,(?i).*(manus|tech\.butterfly\.app).*,🤖 AI大模型
+  # Claude / Anthropic：进程命中优先，覆盖 Claude Desktop、Claude Code 等客户端
+  - PROCESS-NAME-REGEX,(?i).*claude.*,🤖 AI大模型
+  - PROCESS-NAME-REGEX,(?i).*anthropic.*,🤖 AI大模型
+  # Claude / Anthropic：官方 API、网页登录、OAuth、MCP、CLI 更新和插件依赖
+  - DOMAIN,api.anthropic.com,🤖 AI大模型
+  - DOMAIN,console.anthropic.com,🤖 AI大模型
+  - DOMAIN,statsig.anthropic.com,🤖 AI大模型
+  - DOMAIN,status.anthropic.com,🤖 AI大模型
+  - DOMAIN,sentry.anthropic.com,🤖 AI大模型
+  - DOMAIN,support.anthropic.com,🤖 AI大模型
+  - DOMAIN,mcp-proxy.anthropic.com,🤖 AI大模型
+  - DOMAIN,platform.claude.com,🤖 AI大模型
+  - DOMAIN,code.claude.com,🤖 AI大模型
+  - DOMAIN,downloads.claude.ai,🤖 AI大模型
+  - DOMAIN,bridge.claudeusercontent.com,🤖 AI大模型
+  - DOMAIN,cdn.growthbook.io,🤖 AI大模型
+  - DOMAIN,cdn.usefathom.com,🤖 AI大模型
+  - DOMAIN,registry.npmjs.org,🤖 AI大模型
+  - DOMAIN,storage.googleapis.com,🤖 AI大模型
+  - DOMAIN,formulae.brew.sh,🤖 AI大模型
+  - DOMAIN,http-intake.logs.us5.datadoghq.com,🤖 AI大模型
+  - DOMAIN,browser-intake-us5-datadoghq.com,🤖 AI大模型
+  - DOMAIN,servd-anthropic-website.b-cdn.net,🤖 AI大模型
+  - DOMAIN,claudemcpclient.com,🤖 AI大模型
+  - DOMAIN,claudemcpcontent.com,🤖 AI大模型
+  - DOMAIN-SUFFIX,anthropic.com,🤖 AI大模型
+  - DOMAIN-SUFFIX,claude.ai,🤖 AI大模型
+  - DOMAIN-SUFFIX,claude.com,🤖 AI大模型
+  - DOMAIN-SUFFIX,claudeusercontent.com,🤖 AI大模型
+  - DOMAIN-SUFFIX,clau.de,🤖 AI大模型
+  - DOMAIN-SUFFIX,frame.claudeusercontent.com,🤖 AI大模型
+  - DOMAIN-SUFFIX,modelcontextprotocol.io,🤖 AI大模型
+  - IP-CIDR,160.79.104.0/21,🤖 AI大模型,no-resolve
+  - IP-CIDR6,2607:6bc0::/48,🤖 AI大模型,no-resolve
+  - RULE-SET,Gemini_Domain,🤖 AI大模型
 
-  # 抗 DNS 污染
-  - DOMAIN-KEYWORD,amazon,$app_name
-  - DOMAIN-KEYWORD,google,$app_name
-  - DOMAIN-KEYWORD,gmail,$app_name
-  - DOMAIN-KEYWORD,youtube,$app_name
-  - DOMAIN-KEYWORD,facebook,$app_name
-  - DOMAIN-SUFFIX,fb.me,$app_name
-  - DOMAIN-SUFFIX,fbcdn.net,$app_name
-  - DOMAIN-KEYWORD,twitter,$app_name
-  - DOMAIN-KEYWORD,instagram,$app_name
-  - DOMAIN-KEYWORD,dropbox,$app_name
-  - DOMAIN-SUFFIX,twimg.com,$app_name
-  - DOMAIN-KEYWORD,blogspot,$app_name
-  - DOMAIN-SUFFIX,youtu.be,$app_name
-  - DOMAIN-KEYWORD,whatsapp,$app_name
+  - RULE-SET,Grok_Domain,🤖 AI大模型
+  # - RULE-SET,Grok_IP,🤖 AI大模型
+  - IP-CIDR,17.253.4.0/23,🤖 AI大模型,no-resolve
 
-  # 常见广告域名屏蔽
-  - DOMAIN-KEYWORD,admarvel,REJECT
-  - DOMAIN-KEYWORD,admaster,REJECT
-  - DOMAIN-KEYWORD,adsage,REJECT
-  - DOMAIN-KEYWORD,adsmogo,REJECT
-  - DOMAIN-KEYWORD,adsrvmedia,REJECT
-  - DOMAIN-KEYWORD,adwords,REJECT
-  - DOMAIN-KEYWORD,adservice,REJECT
-  - DOMAIN-SUFFIX,appsflyer.com,REJECT
-  - DOMAIN-KEYWORD,domob,REJECT
-  - DOMAIN-SUFFIX,doubleclick.net,REJECT
-  - DOMAIN-KEYWORD,duomeng,REJECT
-  - DOMAIN-KEYWORD,dwtrack,REJECT
-  - DOMAIN-KEYWORD,guanggao,REJECT
-  - DOMAIN-KEYWORD,lianmeng,REJECT
-  - DOMAIN-SUFFIX,mmstat.com,REJECT
-  - DOMAIN-KEYWORD,mopub,REJECT
-  - DOMAIN-KEYWORD,omgmta,REJECT
-  - DOMAIN-KEYWORD,openx,REJECT
-  - DOMAIN-KEYWORD,partnerad,REJECT
-  - DOMAIN-KEYWORD,pingfore,REJECT
-  - DOMAIN-KEYWORD,supersonicads,REJECT
-  - DOMAIN-KEYWORD,uedas,REJECT
-  - DOMAIN-KEYWORD,umeng,REJECT
-  - DOMAIN-KEYWORD,usage,REJECT
-  - DOMAIN-SUFFIX,vungle.com,REJECT
-  - DOMAIN-KEYWORD,wlmonitor,REJECT
-  - DOMAIN-KEYWORD,zjtoolbar,REJECT
+  # CDN 和静态资源
+  - DOMAIN,anthropic.com.cdn.cloudflare.net,🤖 AI大模型
+  # 认证 / 内容
+  - DOMAIN,anthropic-com.ghost.io,🤖 AI大模型
+  # 监控和遥测
+  - DOMAIN-SUFFIX,sentry.io,🤖 AI大模型
+  - DOMAIN-SUFFIX,statsigapi.net,🤖 AI大模型
+  - DOMAIN,browser-intake-us5-datadoghq.com,🤖 AI大模型
+  - DOMAIN-KEYWORD,datadog,🤖 AI大模型
+  - DOMAIN-KEYWORD,sift,🤖 AI大模型
+  # 兼容旧版 AI 规则中的第三方监控条目
+  - RULE-SET,ai-1,🤖 AI大模型
+  - RULE-SET,ai-2,🤖 AI大模型
 
-  # 国外网站
-  - DOMAIN-SUFFIX,9to5mac.com,$app_name
-  - DOMAIN-SUFFIX,abpchina.org,$app_name
-  - DOMAIN-SUFFIX,adblockplus.org,$app_name
-  - DOMAIN-SUFFIX,adobe.com,$app_name
-  - DOMAIN-SUFFIX,akamaized.net,$app_name
-  - DOMAIN-SUFFIX,alfredapp.com,$app_name
-  - DOMAIN-SUFFIX,amplitude.com,$app_name
-  - DOMAIN-SUFFIX,ampproject.org,$app_name
-  - DOMAIN-SUFFIX,android.com,$app_name
-  - DOMAIN-SUFFIX,angularjs.org,$app_name
-  - DOMAIN-SUFFIX,aolcdn.com,$app_name
-  - DOMAIN-SUFFIX,apkpure.com,$app_name
-  - DOMAIN-SUFFIX,appledaily.com,$app_name
-  - DOMAIN-SUFFIX,appshopper.com,$app_name
-  - DOMAIN-SUFFIX,appspot.com,$app_name
-  - DOMAIN-SUFFIX,arcgis.com,$app_name
-  - DOMAIN-SUFFIX,archive.org,$app_name
-  - DOMAIN-SUFFIX,armorgames.com,$app_name
-  - DOMAIN-SUFFIX,aspnetcdn.com,$app_name
-  - DOMAIN-SUFFIX,att.com,$app_name
-  - DOMAIN-SUFFIX,awsstatic.com,$app_name
-  - DOMAIN-SUFFIX,azureedge.net,$app_name
-  - DOMAIN-SUFFIX,azurewebsites.net,$app_name
-  - DOMAIN-SUFFIX,bing.com,$app_name
-  - DOMAIN-SUFFIX,bintray.com,$app_name
-  - DOMAIN-SUFFIX,bit.com,$app_name
-  - DOMAIN-SUFFIX,bit.ly,$app_name
-  - DOMAIN-SUFFIX,bitbucket.org,$app_name
-  - DOMAIN-SUFFIX,bjango.com,$app_name
-  - DOMAIN-SUFFIX,bkrtx.com,$app_name
-  - DOMAIN-SUFFIX,blog.com,$app_name
-  - DOMAIN-SUFFIX,blogcdn.com,$app_name
-  - DOMAIN-SUFFIX,blogger.com,$app_name
-  - DOMAIN-SUFFIX,blogsmithmedia.com,$app_name
-  - DOMAIN-SUFFIX,blogspot.com,$app_name
-  - DOMAIN-SUFFIX,blogspot.hk,$app_name
-  - DOMAIN-SUFFIX,bloomberg.com,$app_name
-  - DOMAIN-SUFFIX,box.com,$app_name
-  - DOMAIN-SUFFIX,box.net,$app_name
-  - DOMAIN-SUFFIX,cachefly.net,$app_name
-  - DOMAIN-SUFFIX,chromium.org,$app_name
-  - DOMAIN-SUFFIX,cl.ly,$app_name
-  - DOMAIN-SUFFIX,cloudflare.com,$app_name
-  - DOMAIN-SUFFIX,cloudfront.net,$app_name
-  - DOMAIN-SUFFIX,cloudmagic.com,$app_name
-  - DOMAIN-SUFFIX,cmail19.com,$app_name
-  - DOMAIN-SUFFIX,cnet.com,$app_name
-  - DOMAIN-SUFFIX,cocoapods.org,$app_name
-  - DOMAIN-SUFFIX,comodoca.com,$app_name
-  - DOMAIN-SUFFIX,crashlytics.com,$app_name
-  - DOMAIN-SUFFIX,culturedcode.com,$app_name
-  - DOMAIN-SUFFIX,d.pr,$app_name
-  - DOMAIN-SUFFIX,danilo.to,$app_name
-  - DOMAIN-SUFFIX,dayone.me,$app_name
-  - DOMAIN-SUFFIX,db.tt,$app_name
-  - DOMAIN-SUFFIX,deskconnect.com,$app_name
-  - DOMAIN-SUFFIX,disq.us,$app_name
-  - DOMAIN-SUFFIX,disqus.com,$app_name
-  - DOMAIN-SUFFIX,disquscdn.com,$app_name
-  - DOMAIN-SUFFIX,dnsimple.com,$app_name
-  - DOMAIN-SUFFIX,docker.com,$app_name
-  - DOMAIN-SUFFIX,dribbble.com,$app_name
-  - DOMAIN-SUFFIX,droplr.com,$app_name
-  - DOMAIN-SUFFIX,duckduckgo.com,$app_name
-  - DOMAIN-SUFFIX,dueapp.com,$app_name
-  - DOMAIN-SUFFIX,dytt8.net,$app_name
-  - DOMAIN-SUFFIX,edgecastcdn.net,$app_name
-  - DOMAIN-SUFFIX,edgekey.net,$app_name
-  - DOMAIN-SUFFIX,edgesuite.net,$app_name
-  - DOMAIN-SUFFIX,engadget.com,$app_name
-  - DOMAIN-SUFFIX,entrust.net,$app_name
-  - DOMAIN-SUFFIX,eurekavpt.com,$app_name
-  - DOMAIN-SUFFIX,evernote.com,$app_name
-  - DOMAIN-SUFFIX,fabric.io,$app_name
-  - DOMAIN-SUFFIX,fast.com,$app_name
-  - DOMAIN-SUFFIX,fastly.net,$app_name
-  - DOMAIN-SUFFIX,fc2.com,$app_name
-  - DOMAIN-SUFFIX,feedburner.com,$app_name
-  - DOMAIN-SUFFIX,feedly.com,$app_name
-  - DOMAIN-SUFFIX,feedsportal.com,$app_name
-  - DOMAIN-SUFFIX,fiftythree.com,$app_name
-  - DOMAIN-SUFFIX,firebaseio.com,$app_name
-  - DOMAIN-SUFFIX,flexibits.com,$app_name
-  - DOMAIN-SUFFIX,flickr.com,$app_name
-  - DOMAIN-SUFFIX,flipboard.com,$app_name
-  - DOMAIN-SUFFIX,g.co,$app_name
-  - DOMAIN-SUFFIX,gabia.net,$app_name
-  - DOMAIN-SUFFIX,geni.us,$app_name
-  - DOMAIN-SUFFIX,gfx.ms,$app_name
-  - DOMAIN-SUFFIX,ggpht.com,$app_name
-  - DOMAIN-SUFFIX,ghostnoteapp.com,$app_name
-  - DOMAIN-SUFFIX,git.io,$app_name
-  - DOMAIN-KEYWORD,github,$app_name
-  - DOMAIN-SUFFIX,globalsign.com,$app_name
-  - DOMAIN-SUFFIX,gmodules.com,$app_name
-  - DOMAIN-SUFFIX,godaddy.com,$app_name
-  - DOMAIN-SUFFIX,golang.org,$app_name
-  - DOMAIN-SUFFIX,gongm.in,$app_name
-  - DOMAIN-SUFFIX,goo.gl,$app_name
-  - DOMAIN-SUFFIX,goodreaders.com,$app_name
-  - DOMAIN-SUFFIX,goodreads.com,$app_name
-  - DOMAIN-SUFFIX,gravatar.com,$app_name
-  - DOMAIN-SUFFIX,gstatic.com,$app_name
-  - DOMAIN-SUFFIX,gvt0.com,$app_name
-  - DOMAIN-SUFFIX,hockeyapp.net,$app_name
-  - DOMAIN-SUFFIX,hotmail.com,$app_name
-  - DOMAIN-SUFFIX,icons8.com,$app_name
-  - DOMAIN-SUFFIX,ifixit.com,$app_name
-  - DOMAIN-SUFFIX,ift.tt,$app_name
-  - DOMAIN-SUFFIX,ifttt.com,$app_name
-  - DOMAIN-SUFFIX,iherb.com,$app_name
-  - DOMAIN-SUFFIX,imageshack.us,$app_name
-  - DOMAIN-SUFFIX,img.ly,$app_name
-  - DOMAIN-SUFFIX,imgur.com,$app_name
-  - DOMAIN-SUFFIX,imore.com,$app_name
-  - DOMAIN-SUFFIX,instapaper.com,$app_name
-  - DOMAIN-SUFFIX,ipn.li,$app_name
-  - DOMAIN-SUFFIX,is.gd,$app_name
-  - DOMAIN-SUFFIX,issuu.com,$app_name
-  - DOMAIN-SUFFIX,itgonglun.com,$app_name
-  - DOMAIN-SUFFIX,itun.es,$app_name
-  - DOMAIN-SUFFIX,ixquick.com,$app_name
-  - DOMAIN-SUFFIX,j.mp,$app_name
-  - DOMAIN-SUFFIX,js.revsci.net,$app_name
-  - DOMAIN-SUFFIX,jshint.com,$app_name
-  - DOMAIN-SUFFIX,jtvnw.net,$app_name
-  - DOMAIN-SUFFIX,justgetflux.com,$app_name
-  - DOMAIN-SUFFIX,kat.cr,$app_name
-  - DOMAIN-SUFFIX,klip.me,$app_name
-  - DOMAIN-SUFFIX,libsyn.com,$app_name
-  - DOMAIN-SUFFIX,linkedin.com,$app_name
-  - DOMAIN-SUFFIX,line-apps.com,$app_name
-  - DOMAIN-SUFFIX,linode.com,$app_name
-  - DOMAIN-SUFFIX,lithium.com,$app_name
-  - DOMAIN-SUFFIX,littlehj.com,$app_name
-  - DOMAIN-SUFFIX,live.com,$app_name
-  - DOMAIN-SUFFIX,live.net,$app_name
-  - DOMAIN-SUFFIX,livefilestore.com,$app_name
-  - DOMAIN-SUFFIX,llnwd.net,$app_name
-  - DOMAIN-SUFFIX,macid.co,$app_name
-  - DOMAIN-SUFFIX,macromedia.com,$app_name
-  - DOMAIN-SUFFIX,macrumors.com,$app_name
-  - DOMAIN-SUFFIX,mashable.com,$app_name
-  - DOMAIN-SUFFIX,mathjax.org,$app_name
-  - DOMAIN-SUFFIX,medium.com,$app_name
-  - DOMAIN-SUFFIX,mega.co.nz,$app_name
-  - DOMAIN-SUFFIX,mega.nz,$app_name
-  - DOMAIN-SUFFIX,megaupload.com,$app_name
-  - DOMAIN-SUFFIX,microsofttranslator.com,$app_name
-  - DOMAIN-SUFFIX,mindnode.com,$app_name
-  - DOMAIN-SUFFIX,mobile01.com,$app_name
-  - DOMAIN-SUFFIX,modmyi.com,$app_name
-  - DOMAIN-SUFFIX,msedge.net,$app_name
-  - DOMAIN-SUFFIX,myfontastic.com,$app_name
-  - DOMAIN-SUFFIX,name.com,$app_name
-  - DOMAIN-SUFFIX,nextmedia.com,$app_name
-  - DOMAIN-SUFFIX,nsstatic.net,$app_name
-  - DOMAIN-SUFFIX,nssurge.com,$app_name
-  - DOMAIN-SUFFIX,nyt.com,$app_name
-  - DOMAIN-SUFFIX,nytimes.com,$app_name
-  - DOMAIN-SUFFIX,omnigroup.com,$app_name
-  - DOMAIN-SUFFIX,onedrive.com,$app_name
-  - DOMAIN-SUFFIX,onenote.com,$app_name
-  - DOMAIN-SUFFIX,ooyala.com,$app_name
-  - DOMAIN-SUFFIX,openvpn.net,$app_name
-  - DOMAIN-SUFFIX,openwrt.org,$app_name
-  - DOMAIN-SUFFIX,orkut.com,$app_name
-  - DOMAIN-SUFFIX,osxdaily.com,$app_name
-  - DOMAIN-SUFFIX,outlook.com,$app_name
-  - DOMAIN-SUFFIX,ow.ly,$app_name
-  - DOMAIN-SUFFIX,paddleapi.com,$app_name
-  - DOMAIN-SUFFIX,parallels.com,$app_name
-  - DOMAIN-SUFFIX,parse.com,$app_name
-  - DOMAIN-SUFFIX,pdfexpert.com,$app_name
-  - DOMAIN-SUFFIX,periscope.tv,$app_name
-  - DOMAIN-SUFFIX,pinboard.in,$app_name
-  - DOMAIN-SUFFIX,pinterest.com,$app_name
-  - DOMAIN-SUFFIX,pixelmator.com,$app_name
-  - DOMAIN-SUFFIX,pixiv.net,$app_name
-  - DOMAIN-SUFFIX,playpcesor.com,$app_name
-  - DOMAIN-SUFFIX,playstation.com,$app_name
-  - DOMAIN-SUFFIX,playstation.com.hk,$app_name
-  - DOMAIN-SUFFIX,playstation.net,$app_name
-  - DOMAIN-SUFFIX,playstationnetwork.com,$app_name
-  - DOMAIN-SUFFIX,pushwoosh.com,$app_name
-  - DOMAIN-SUFFIX,rime.im,$app_name
-  - DOMAIN-SUFFIX,servebom.com,$app_name
-  - DOMAIN-SUFFIX,sfx.ms,$app_name
-  - DOMAIN-SUFFIX,shadowsocks.org,$app_name
-  - DOMAIN-SUFFIX,sharethis.com,$app_name
-  - DOMAIN-SUFFIX,shazam.com,$app_name
-  - DOMAIN-SUFFIX,skype.com,$app_name
-  - DOMAIN-SUFFIX,smartdns$app_name.com,$app_name
-  - DOMAIN-SUFFIX,smartmailcloud.com,$app_name
-  - DOMAIN-SUFFIX,sndcdn.com,$app_name
-  - DOMAIN-SUFFIX,sony.com,$app_name
-  - DOMAIN-SUFFIX,soundcloud.com,$app_name
-  - DOMAIN-SUFFIX,sourceforge.net,$app_name
-  - DOMAIN-SUFFIX,spotify.com,$app_name
-  - DOMAIN-SUFFIX,squarespace.com,$app_name
-  - DOMAIN-SUFFIX,sstatic.net,$app_name
-  - DOMAIN-SUFFIX,st.luluku.pw,$app_name
-  - DOMAIN-SUFFIX,stackoverflow.com,$app_name
-  - DOMAIN-SUFFIX,startpage.com,$app_name
-  - DOMAIN-SUFFIX,staticflickr.com,$app_name
-  - DOMAIN-SUFFIX,steamcommunity.com,$app_name
-  - DOMAIN-SUFFIX,symauth.com,$app_name
-  - DOMAIN-SUFFIX,symcb.com,$app_name
-  - DOMAIN-SUFFIX,symcd.com,$app_name
-  - DOMAIN-SUFFIX,tapbots.com,$app_name
-  - DOMAIN-SUFFIX,tapbots.net,$app_name
-  - DOMAIN-SUFFIX,tdesktop.com,$app_name
-  - DOMAIN-SUFFIX,techcrunch.com,$app_name
-  - DOMAIN-SUFFIX,techsmith.com,$app_name
-  - DOMAIN-SUFFIX,thepiratebay.org,$app_name
-  - DOMAIN-SUFFIX,theverge.com,$app_name
-  - DOMAIN-SUFFIX,time.com,$app_name
-  - DOMAIN-SUFFIX,timeinc.net,$app_name
-  - DOMAIN-SUFFIX,tiny.cc,$app_name
-  - DOMAIN-SUFFIX,tinypic.com,$app_name
-  - DOMAIN-SUFFIX,tmblr.co,$app_name
-  - DOMAIN-SUFFIX,todoist.com,$app_name
-  - DOMAIN-SUFFIX,trello.com,$app_name
-  - DOMAIN-SUFFIX,trustasiassl.com,$app_name
-  - DOMAIN-SUFFIX,tumblr.co,$app_name
-  - DOMAIN-SUFFIX,tumblr.com,$app_name
-  - DOMAIN-SUFFIX,tweetdeck.com,$app_name
-  - DOMAIN-SUFFIX,tweetmarker.net,$app_name
-  - DOMAIN-SUFFIX,twitch.tv,$app_name
-  - DOMAIN-SUFFIX,txmblr.com,$app_name
-  - DOMAIN-SUFFIX,typekit.net,$app_name
-  - DOMAIN-SUFFIX,ubertags.com,$app_name
-  - DOMAIN-SUFFIX,ublock.org,$app_name
-  - DOMAIN-SUFFIX,ubnt.com,$app_name
-  - DOMAIN-SUFFIX,ulyssesapp.com,$app_name
-  - DOMAIN-SUFFIX,urchin.com,$app_name
-  - DOMAIN-SUFFIX,usertrust.com,$app_name
-  - DOMAIN-SUFFIX,v.gd,$app_name
-  - DOMAIN-SUFFIX,v2ex.com,$app_name
-  - DOMAIN-SUFFIX,vimeo.com,$app_name
-  - DOMAIN-SUFFIX,vimeocdn.com,$app_name
-  - DOMAIN-SUFFIX,vine.co,$app_name
-  - DOMAIN-SUFFIX,vivaldi.com,$app_name
-  - DOMAIN-SUFFIX,vox-cdn.com,$app_name
-  - DOMAIN-SUFFIX,vsco.co,$app_name
-  - DOMAIN-SUFFIX,vultr.com,$app_name
-  - DOMAIN-SUFFIX,w.org,$app_name
-  - DOMAIN-SUFFIX,w3schools.com,$app_name
-  - DOMAIN-SUFFIX,webtype.com,$app_name
-  - DOMAIN-SUFFIX,wikiwand.com,$app_name
-  - DOMAIN-SUFFIX,wikileaks.org,$app_name
-  - DOMAIN-SUFFIX,wikimedia.org,$app_name
-  - DOMAIN-SUFFIX,wikipedia.com,$app_name
-  - DOMAIN-SUFFIX,wikipedia.org,$app_name
-  - DOMAIN-SUFFIX,windows.com,$app_name
-  - DOMAIN-SUFFIX,windows.net,$app_name
-  - DOMAIN-SUFFIX,wire.com,$app_name
-  - DOMAIN-SUFFIX,wordpress.com,$app_name
-  - DOMAIN-SUFFIX,workflowy.com,$app_name
-  - DOMAIN-SUFFIX,wp.com,$app_name
-  - DOMAIN-SUFFIX,wsj.com,$app_name
-  - DOMAIN-SUFFIX,wsj.net,$app_name
-  - DOMAIN-SUFFIX,xda-developers.com,$app_name
-  - DOMAIN-SUFFIX,xeeno.com,$app_name
-  - DOMAIN-SUFFIX,xiti.com,$app_name
-  - DOMAIN-SUFFIX,yahoo.com,$app_name
-  - DOMAIN-SUFFIX,yimg.com,$app_name
-  - DOMAIN-SUFFIX,ying.com,$app_name
-  - DOMAIN-SUFFIX,yoyo.org,$app_name
-  - DOMAIN-SUFFIX,ytimg.com,$app_name
+  - RULE-SET,google,$app_name
+  - RULE-SET,google-cn,$app_name
 
-  # Telegram
-  - DOMAIN-SUFFIX,telegra.ph,$app_name
-  - DOMAIN-SUFFIX,telegram.org,$app_name
-  - IP-CIDR,91.108.4.0/22,$app_name,no-resolve
-  - IP-CIDR,91.108.8.0/21,$app_name,no-resolve
-  - IP-CIDR,91.108.16.0/22,$app_name,no-resolve
-  - IP-CIDR,91.108.56.0/22,$app_name,no-resolve
-  - IP-CIDR,149.154.160.0/20,$app_name,no-resolve
-  - IP-CIDR6,2001:67c:4e8::/48,$app_name,no-resolve
-  - IP-CIDR6,2001:b28:f23d::/48,$app_name,no-resolve
-  - IP-CIDR6,2001:b28:f23f::/48,$app_name,no-resolve
+  - PROCESS-NAME-REGEX,.*twitter.*,✖️ Twitter
+  - RULE-SET,twitter-x-domain,✖️ Twitter
+  - RULE-SET,twitter-x-ip,✖️ Twitter,no-resolve
+  - RULE-SET,twitter-x-blackmatrix7-No_Resolve,✖️ Twitter
 
-  # Google 中国服务 services.googleapis.cn
-  - IP-CIDR,120.232.181.162/32,$app_name,no-resolve
-  - IP-CIDR,120.241.147.226/32,$app_name,no-resolve
-  - IP-CIDR,120.253.253.226/32,$app_name,no-resolve
-  - IP-CIDR,120.253.255.162/32,$app_name,no-resolve
-  - IP-CIDR,120.253.255.34/32,$app_name,no-resolve
-  - IP-CIDR,120.253.255.98/32,$app_name,no-resolve
-  - IP-CIDR,180.163.150.162/32,$app_name,no-resolve
-  - IP-CIDR,180.163.150.34/32,$app_name,no-resolve
-  - IP-CIDR,180.163.151.162/32,$app_name,no-resolve
-  - IP-CIDR,180.163.151.34/32,$app_name,no-resolve
-  - IP-CIDR,203.208.39.0/24,$app_name,no-resolve
-  - IP-CIDR,203.208.40.0/24,$app_name,no-resolve
-  - IP-CIDR,203.208.41.0/24,$app_name,no-resolve
-  - IP-CIDR,203.208.43.0/24,$app_name,no-resolve
-  - IP-CIDR,203.208.50.0/24,$app_name,no-resolve
-  - IP-CIDR,220.181.174.162/32,$app_name,no-resolve
-  - IP-CIDR,220.181.174.226/32,$app_name,no-resolve
-  - IP-CIDR,220.181.174.34/32,$app_name,no-resolve
-
-  # LAN
-  - DOMAIN,injections.adguard.org,DIRECT
-  - DOMAIN,local.adguard.org,DIRECT
-  - DOMAIN-SUFFIX,local,DIRECT
-  - IP-CIDR,127.0.0.0/8,DIRECT
-  - IP-CIDR,172.16.0.0/12,DIRECT
-  - IP-CIDR,192.168.0.0/16,DIRECT
-  - IP-CIDR,10.0.0.0/8,DIRECT
-  - IP-CIDR,17.0.0.0/8,DIRECT
-  - IP-CIDR,100.64.0.0/10,DIRECT
-  - IP-CIDR,224.0.0.0/4,DIRECT
-  - IP-CIDR6,fe80::/10,DIRECT
-
-  # 剩余未匹配的国内网站
-  - DOMAIN-SUFFIX,cn,DIRECT
-  - DOMAIN-KEYWORD,-cn,DIRECT
-
-  # 最终规则
-  - GEOIP,CN,DIRECT
+  - RULE-SET,steam,🎮 Steam平台（非下载/CDN）
+  - RULE-SET,steam_ip,🎮 Steam平台（非下载/CDN）,no-resolve
+  - PROCESS-NAME,bf6.exe,🎮 Games-Global
+  - RULE-SET,games,🎮 Games-Global
+  - RULE-SET,TikTok,🎵 TikTok
+  - RULE-SET,proxy,$app_name
+  - RULE-SET,gfw,$app_name
   - MATCH,$app_name
