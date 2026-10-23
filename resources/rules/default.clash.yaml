@@ -341,7 +341,7 @@ proxy-groups:
   # 注意：面板会给本组追加全部节点（这是面板行为，无法只保留两项），默认选中仍是 👉 手动切换。
   - name: FCM
     icon: "https://fastly.jsdelivr.net/gh/XVSVTsama/mihomo-config-self@main/assets/icons/upstream-MiToverG422-Qure-fcm.png"
-    hide: true
+    hidden: true
     type: select
     proxies:
       - 👉 手动切换
