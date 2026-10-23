@@ -245,7 +245,7 @@ hosts:
   '*.pglstatp-toutiao.com.*': 0.0.0.0
   'gurd.snssdk.com': 0.0.0.0
   'gurd.snssdk.com.*': 0.0.0.0
-  '*default.ixigua.com': 0.0.0.0
+  '*.ixigua.com': 0.0.0.0
 
 # 由面板填入订阅的全部节点，模板里保持为空
 proxies:
