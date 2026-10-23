@@ -454,6 +454,10 @@ rules:
   - IP-CIDR,104.243.18.103/32,DIRECT
   - DOMAIN,bedrock.kuokuo.io,DIRECT
   - DOMAIN,deepclaude.kuokuo.io,DIRECT
+  - DOMAIN,d.kuokuo.io,DIRECT
+  - DOMAIN,derper.kuokuo.io,DIRECT
+  - DOMAIN,cdn.kuokuo.io,DIRECT
+  - DOMAIN,code.kuokuo.io,DIRECT
 
   - SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie
   - DOMAIN-KEYWORD,ikuuu,$app_name
