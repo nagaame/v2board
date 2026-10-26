@@ -180,11 +180,12 @@ dns:
   use-hosts: true
   use-system-hosts: false
   default-nameserver:
-    - 223.5.5.5#DIRECT
+    - 1.1.1.1#DIRECT
+    - 8.8.8.8#DIRECT
     - 114.114.114.114#DIRECT
-    - 185.222.222.222#DIRECT
   proxy-server-nameserver:
-    - https://kuokuo.cloudflare-gateway.com/dns-query#DIRECT
+    - https://dns.alidns.com/dns-query#DIRECT
+    - https://doh.pub/dns-query#DIRECT
   direct-nameserver:
     - https://dns.alidns.com/dns-query#DIRECT
     - https://doh.pub/dns-query#DIRECT
