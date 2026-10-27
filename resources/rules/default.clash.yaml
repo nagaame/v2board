@@ -96,9 +96,7 @@ tun:
 ntp:
   enable: true
   write-to-system: false
-  server: 
-    - 'time.apple.com'
-    - 'ntp.aliyun.com'
+  server: 'time.apple.com'
   # - 'time1.cloud.tencent.com'
   port: 123
 
@@ -200,12 +198,6 @@ dns:
   # - https://doh.dns.sb/dns-query              # DNS.SB 公共 DNS   # 185.222.222.222     45.11.45.11
   # - https://dns.twnic.tw/dns-query            # Quad101 公共 DNS  # 101.101.101.10      101.102.103.10
   nameserver-policy:
-    'rule-set:douyin':
-      - system
-      - 180.184.1.1
-      - 180.184.2.2
-    'rule-set:private':
-      - system
     'rule-set:proxy@direct,cn,echs_cn,echs_direct':
       - https://dns.alidns.com/dns-query#DIRECT
   prefer-h3: false
