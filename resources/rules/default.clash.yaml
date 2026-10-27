@@ -462,6 +462,7 @@ rules:
   - PROCESS-NAME-REGEX,tailscaled$,DIRECT
   - PROCESS-NAME-REGEX,tailscale$,DIRECT
   - DOMAIN-SUFFIX,tailscale.com,DIRECT
+  - PROCESS-NAME-REGEX,ssh$,DIRECT
 
   - SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie
   - DOMAIN-KEYWORD,ikuuu,$app_name
