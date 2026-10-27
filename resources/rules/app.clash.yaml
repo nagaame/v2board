@@ -11,7 +11,7 @@ external-controller: 127.0.0.1:9090
 external-ui: dashboard
 etag-support: true
 global-ua: clash.meta
-ipv6: false
+ipv6: true
 unified-delay: true
 tcp-concurrent: true
 keep-alive-idle: 600
@@ -225,15 +225,15 @@ rules:
   # - IP-CIDR,64.64.237.82/32,DIRECT
   # - IP-CIDR,104.243.18.103/32,DIRECT
 
-  - DOMAIN-SUFFIX,keke.ing,DIRECT
   - DOMAIN,jntm.keke.ing,$app_name
-
+  - DOMAIN-SUFFIX,keke.ing,DIRECT
+  
   - DST-PORT,41641,DIRECT
   - SRC-PORT,41641,DIRECT
   - PROCESS-NAME-REGEX,tailscaled$,DIRECT
   - PROCESS-NAME-REGEX,tailscale$,DIRECT
   - DOMAIN-SUFFIX,tailscale.com,DIRECT
-
+  - PROCESS-NAME-REGEX,ssh$,DIRECT
 
   - SUB-RULE,(PROCESS-NAME,com.dragon.read.oversea.gp),fanqie
   - DOMAIN-KEYWORD,ikuuu,$app_name

@@ -96,8 +96,9 @@ tun:
 ntp:
   enable: true
   write-to-system: false
-  server: 'time.apple.com'
-  # - 'ntp.aliyun.com'
+  server: 
+    - 'time.apple.com'
+    - 'ntp.aliyun.com'
   # - 'time1.cloud.tencent.com'
   port: 123
 
@@ -450,9 +451,10 @@ rules:
   # - IP-CIDR,64.64.237.82/32,DIRECT
   # - IP-CIDR,104.243.18.103/32,DIRECT
 
-  - DOMAIN-SUFFIX,keke.ing,DIRECT
-  - DOMAIN,jntm.keke.ing,$app_name
 
+  - DOMAIN,jntm.keke.ing,$app_name
+  - DOMAIN-SUFFIX,keke.ing,DIRECT
+  
   - DST-PORT,41641,DIRECT
   - SRC-PORT,41641,DIRECT
   - PROCESS-NAME-REGEX,tailscaled$,DIRECT
