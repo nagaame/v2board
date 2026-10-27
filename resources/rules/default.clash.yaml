@@ -24,7 +24,7 @@ external-controller: 127.0.0.1:9090
 external-ui: dashboard
 etag-support: true
 global-ua: clash.meta
-ipv6: false
+ipv6: true
 unified-delay: true
 tcp-concurrent: true
 keep-alive-idle: 600
@@ -32,66 +32,66 @@ keep-alive-interval: 15
 store-selected: true
 store-fake-ip: true
 
-# tun:
-#   enable: true
-#   device: ClashTUN
-#   auto-detect-interface: true
-#   auto-route: true
-#   auto-redirect: true
-#   strict-route: true
-#   stack: mips
-#   dns-hijack:
-#     - "any:53"
-#     - "udp://any:53"
-#     - "tcp://any:53"
-#   route-address:
-#     - "198.51.100.0/30"
-#     - "1.0.0.0/8"
-#     - "2.0.0.0/7"
-#     - "4.0.0.0/6"
-#     - "8.0.0.0/7"
-#     - "11.0.0.0/8"
-#     - "12.0.0.0/6"
-#     - "16.0.0.0/4"
-#     - "32.0.0.0/3"
-#     - "64.0.0.0/3"
-#     - "96.0.0.0/4"
-#     - "112.0.0.0/5"
-#     - "120.0.0.0/6"
-#     - "124.0.0.0/7"
-#     - "126.0.0.0/8"
-#     - "128.0.0.0/3"
-#     - "160.0.0.0/5"
-#     - "168.0.0.0/8"
-#     - "169.0.0.0/9"
-#     - "169.128.0.0/10"
-#     - "169.192.0.0/11"
-#     - "169.224.0.0/12"
-#     - "169.240.0.0/13"
-#     - "169.248.0.0/14"
-#     - "169.252.0.0/15"
-#     - "169.255.0.0/16"
-#     - "170.0.0.0/7"
-#     - "172.0.0.0/12"
-#     - "172.32.0.0/11"
-#     - "172.64.0.0/10"
-#     - "172.128.0.0/9"
-#     - "173.0.0.0/8"
-#     - "174.0.0.0/7"
-#     - "176.0.0.0/4"
-#     - "192.0.0.0/9"
-#     - "192.128.0.0/11"
-#     - "192.160.0.0/13"
-#     - "192.169.0.0/16"
-#     - "192.170.0.0/15"
-#     - "192.172.0.0/14"
-#     - "192.176.0.0/12"
-#     - "192.192.0.0/10"
-#     - "193.0.0.0/8"
-#     - "194.0.0.0/7"
-#     - "196.0.0.0/6"
-#     - "200.0.0.0/5"
-#     - "208.0.0.0/4"
+tun:
+  enable: true
+  device: ClashTUN
+  auto-detect-interface: true
+  auto-route: true
+  auto-redirect: true
+  strict-route: true
+  stack: mixed
+  dns-hijack:
+    - "any:53"
+    - "udp://any:53"
+    - "tcp://any:53"
+  route-address:
+    - "198.51.100.0/30"
+    - "1.0.0.0/8"
+    - "2.0.0.0/7"
+    - "4.0.0.0/6"
+    - "8.0.0.0/7"
+    - "11.0.0.0/8"
+    - "12.0.0.0/6"
+    - "16.0.0.0/4"
+    - "32.0.0.0/3"
+    - "64.0.0.0/3"
+    - "96.0.0.0/4"
+    - "112.0.0.0/5"
+    - "120.0.0.0/6"
+    - "124.0.0.0/7"
+    - "126.0.0.0/8"
+    - "128.0.0.0/3"
+    - "160.0.0.0/5"
+    - "168.0.0.0/8"
+    - "169.0.0.0/9"
+    - "169.128.0.0/10"
+    - "169.192.0.0/11"
+    - "169.224.0.0/12"
+    - "169.240.0.0/13"
+    - "169.248.0.0/14"
+    - "169.252.0.0/15"
+    - "169.255.0.0/16"
+    - "170.0.0.0/7"
+    - "172.0.0.0/12"
+    - "172.32.0.0/11"
+    - "172.64.0.0/10"
+    - "172.128.0.0/9"
+    - "173.0.0.0/8"
+    - "174.0.0.0/7"
+    - "176.0.0.0/4"
+    - "192.0.0.0/9"
+    - "192.128.0.0/11"
+    - "192.160.0.0/13"
+    - "192.169.0.0/16"
+    - "192.170.0.0/15"
+    - "192.172.0.0/14"
+    - "192.176.0.0/12"
+    - "192.192.0.0/10"
+    - "193.0.0.0/8"
+    - "194.0.0.0/7"
+    - "196.0.0.0/6"
+    - "200.0.0.0/5"
+    - "208.0.0.0/4"
 
 ntp:
   enable: true
@@ -174,15 +174,14 @@ dns:
   enable: true
   cache-algorithm: arc
   #prefer-h3: true
-  ipv6: false
-  listen: '0.0.0.0:1053'
+  ipv6: true
+  listen: '[::]:1053'
   #listen: '0.0.0.0:53'
   use-hosts: true
   use-system-hosts: false
   default-nameserver:
-    - 1.1.1.1#DIRECT
-    - 8.8.8.8#DIRECT
     - 114.114.114.114#DIRECT
+    - 223.5.5.5#DIRECT
   proxy-server-nameserver:
     - https://dns.alidns.com/dns-query#DIRECT
     - https://doh.pub/dns-query#DIRECT
@@ -209,7 +208,7 @@ dns:
     'rule-set:proxy@direct,cn,echs_cn,echs_direct':
       - https://dns.alidns.com/dns-query#DIRECT
   prefer-h3: false
-  respect-rules: false
+  respect-rules: true
   enhanced-mode: fake-ip
   fake-ip-range: '198.18.0.1/16'
   fake-ip-range6: fdfe:dcba:9876::1/64
@@ -220,10 +219,7 @@ dns:
     - rule-set:cn
     - rule-set:echs_cn
     - rule-set:echs_direct
-    - rule-set:googlefcm
     - rule-set:applications
-    - rule-set:pixiv
-    - pixshaft.com
 
 hosts:
   '+.clash.dev': ['127.0.0.1']
