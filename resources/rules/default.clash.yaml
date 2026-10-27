@@ -317,7 +317,8 @@ proxy-groups:
     proxies:
       - '~(?i)^(?!.*(?:🇭🇰|香港|USA|Hong\s*Kong|\bHK\b|🇸🇬|新加坡|Singapore|\bSG\b)).*(?:住宅|家宽|家寬|家庭宽带|家庭寬頻|原生住宅|住宅\s*IP|residential|home\s*broadband|home\s*internet|🇺🇸|美国|美國|\bUnited\s+States\b|\bU\.?S\.?(?:A\.?)?\b).*$~'
       - XHTTP
-      - REALITY
+      - REALITY6
+      - HY2
       - 👉 手动切换
 
   - name: 🎵 TikTok
