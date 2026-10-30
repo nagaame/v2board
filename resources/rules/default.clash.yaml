@@ -402,7 +402,15 @@ rules:
 
 
   - DOMAIN,jntm.keke.ing,$app_name
-  - DOMAIN-SUFFIX,keke.ing,DIRECT
+  - DOMAIN,user-manager-server.keke.ing,DIRECT
+  - DOMAIN,develop-server-01.keke.ing,DIRECT
+  - DOMAIN,develop-server-01.keke.ing,DIRECT
+  - DOMAIN,oss.keke.ing,DIRECT
+  - DOMAIN,wss.keke.ing,DIRECT
+  - DOMAIN,cdn.keke.ing,DIRECT
+  - DOMAIN,code.keke.ing,DIRECT
+
+
   
   - DST-PORT,41641,DIRECT
   - SRC-PORT,41641,DIRECT
